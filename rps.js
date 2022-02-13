@@ -27,30 +27,69 @@ let playerWins = 0;
 let computerWins = 0;
 let draws = 0;
 
-function playRound() {
+function initialise(){
+  ["#Rock","#Paper","#Scissors"].forEach(element => {
+    document.querySelector(element).addEventListener('click', onClickGameButton);
+  });
+  renderScore();
+}
+
+function renderScore() {
+  var scoreDiv = document.querySelector("#score");
+  scoreDiv.textContent = `${playerWins}:${computerWins}`;
+}
+
+function onClickGameButton(e){
+  playRound(e.target.id);
+}
+
+function playRound(playerSelection) {
   console.log(`Round ${playerWins+computerWins+draws+1}! Score is ${playerWins}:${computerWins}`);
   const computerSelection=computerPlay();
-  var playerSelection;
-  var result;
-  do {
-    playerSelection = prompt("Rock, Paper or Scissors?");
-    result = getResult(playerSelection, computerSelection);
-  } while(isNaN(result));
+  result = getResult(playerSelection, computerSelection);
 
   switch(result) {
     case RESULT_WIN:
-      console.log(`You win! ${playerSelection} beats ${computerSelection}`);
       playerWins++;
+      renderResult(`You win! ${playerSelection} beats ${computerSelection}`);
       break;
     case RESULT_LOSE:
-      console.log(`You lose! ${computerSelection} beats ${playerSelection}`);
       computerWins++;
+      renderResult(`You lose! ${computerSelection} beats ${playerSelection}`);
       break;
     case RESULT_DRAW:
-      console.log(`It's a draw! Both players chose ${computerSelection}`);
       draws++;
+      renderResult(`It's a draw! Both players chose ${computerSelection}`);
       break;
   }
+}
+
+function renderResult(result){
+  if(playerWins == 5 && computerWins < 5) {
+    result += ". You won the match!";
+    disableButtons();
+  } else if(computerWins == 5 && playerWins < 5) {
+    result += ". The computer wins the match!";
+    disableButtons();
+  }
+  document.querySelector("#roundResult").textContent = result;
+  renderScore();
+}
+
+function disableButtons(){
+  ["#Rock","#Paper","#Scissors"].forEach(element => {
+    document.querySelector(element).disabled = true;
+  });
+}
+
+function getPlayerSelection() {
+  let playerSelection;
+  let index;
+  do {
+    playerSelection = prompt("Rock, Paper or Scissors?");
+    index = findOptionIndex(playerSelection);
+  } while(isNaN(index));
+  return playerSelection;
 }
 
 function game() {
@@ -67,4 +106,4 @@ function game() {
   }
 }
 
-game();
+initialise();
